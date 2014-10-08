@@ -1,15 +1,12 @@
 <?php
 
-/**
-* 
-*/
 class tieba{
 
 	protected $html;
+	protected $postHTML;
 	
-	function __construct($url,$debug=0){
+	function __construct($url){
 		$this->html=$this->getHTMLByCurl($url);
-		$this->html=iconv('gbk','utf-8',var_export($this->html,true));//转换gbk到utf-8编码,否则输出是乱码
 	}
 
 	function getHTMLByCurl($url){
@@ -19,12 +16,10 @@ class tieba{
 		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($curl, CURLOPT_TIMEOUT, 5);
-		//curl_setopt($curl, CURLOPT_POST, 1);
-		//curl_setopt($curl, CURLOPT_POSTFIELDS, 'name=foo&format=csv');
 
 		$r=curl_exec($curl);
 		curl_close($curl);
-
+		$r=iconv('gbk','utf-8',var_export($r,true));//转换gbk到utf-8编码,否则输出是乱码
 		return $r;
 	}
 
@@ -39,22 +34,38 @@ class tieba{
 			$href="http://tieba.baidu.com".$href;
 			$link[]=$href;
 		}
-		print_r($link);
+		return $link;
 	}
 
 	function getContents($url){
-		
+		$pattern="/<div[^>\/]*class=\"d_post_content j_d_post_content \">(.*?)<\/div>/i";
+		$this->postHTML=$this->getHTMLByCurl($url);
+		preg_match_all($pattern,$this->postHTML,$contents);
+		return $contents;
 	}
 
-	function getComments($url){
-
-	}
+	/*function getComments($url){
+		$pattern="/<span class=\"[^\"]+\">[^>]+>/u";
+		preg_match_all($pattern,$this->getHTMLByCurl($url),$remarks);
+		return $remarks;
+	}*/
 
 	function getJson(){
-
+		$linksList=$this->getLinks();
+		foreach($linksList as $key => $url){
+			$contentsList=$this->getContents($url);
+			$jsonData.='"'.$url.'":["html":"'.$this->postHTML.'","contentlist":"[';
+			foreach ($contentsList as $key1 => $contentOuter) {
+				foreach ($contentOuter as $key2 => $contentInner) {
+					$jsonData.='"content-'.$key2.'":"'.$contentInner.'",';
+				}
+			}
+			$jsonData.='",],"dangerlevel":"0"],<br>';
+		}
+		return "{".$jsonData."}";
 	}
 }
 
-$tb=new tieba("http://tieba.baidu.com/f?kw=%B6%AF%C2%FE",1);
-$tb->getLinks();
+$tb=new tieba("http://tieba.baidu.com/f?ie=utf-8&kw=2333333333333333333333333333333333333333333333");
+echo $tb->getJson();
 ?>
