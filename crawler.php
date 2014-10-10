@@ -104,27 +104,27 @@ use Facebook\FacebookCanvasLoginHelper;
 //用在facebook开发者平台申请到的app ID和secret初始化SDK
 FacebookSession::setDefaultApplication('382257391925534','ec3f6b1703dd14e4d7b640a315fe413e');
 
-$helper = new FacebookCanvasLoginHelper();
+/*$helper = new FacebookCanvasLoginHelper();
 try {
-  $session = $helper->getSession();
+	$session = $helper->getSession();
 } catch(FacebookRequestException $ex) {
-  // When Facebook returns an error
+	// When Facebook returns an error
 } catch(\Exception $ex) {
-  // When validation fails or other local issues
-}
+	echo $ex->getMessage();
+}*/
 
-// Get the GraphUser object for the current user:
+$session = new FacebookSession('CAAFbqTwOZBR4BAH3SOi8oALHa7TUwUZCKERb5ZCwVZAuYkV6UniSdTFotFeHvkQeZAUDZAAJ20pQar7eM5d61ErI2oQE7Cumgyis5JwLaY3Xdzc49ZC9ZC2Q60jjdytHqvtdgwS6r6sH5cRyMVXD6oewIYFkmzlp7kLrHLAh2WqkxAZBCbtccqTEqMYFzZBjnlT5iIoZAaJWBX8PUXnHlVL1iTO');
 
 if($session){
 	try {
-  		$me = (new FacebookRequest(
-    		$session, 'GET', '/me'
-  		))->execute()->getGraphObject(GraphUser::className());
-  		echo $me->getName();
-	} catch (FacebookRequestException $e) {
-  		// The Graph API returned an error
-	} catch (\Exception $e) {
-  		// Some other error occurred
+  		$response = (new FacebookRequest($session, 'GET', '/me'))->execute();
+  		$object = $response->getGraphObject();
+  		echo $object->getProperty('id,name,posts{id,message,comments{comments,message,can_remove}}');
+  		//这一行可能有错误,因为没有链接到墙外,我不知道getProperty的准确返回值
+	} catch (FacebookRequestException $ex) {
+  		echo $ex->getMessage();
+	} catch (\Exception $ex) {
+  		echo $ex->getMessage();
 	}
 }
 
