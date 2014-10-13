@@ -75,7 +75,7 @@ function loadDepot($dir){
 }
 
 //这么用
-/*$r=ruffle("fcuk");
+$r=ruffle("fcuk");
 foreach ($r as $key => $word) {
 	$t=matchOfEqualLength($word,"fcxk");//第一个参数是词库数据,每次填入一个词,数据多的时候加个循环就行
 	if($t){
@@ -83,6 +83,6 @@ foreach ($r as $key => $word) {
 	}else{
 		echo 'fcxk match '.$word.' valid<br>';
 	}
-}*/
+}
 
 ?>
