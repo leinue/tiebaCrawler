@@ -1,5 +1,5 @@
 <?php
-
+error_reporting(E_ALL & ~E_NOTICE);
 /**
 * 比较相等长度的字符串
 * 较为严格,不考虑字符的变化位置,如fkuc匹配fuck是匹配不到的,当然如果词典里有fkuc便能匹配类似fkxx的字符串
@@ -70,12 +70,38 @@ function ruffle($depot){
 * @return 词库
 */
 function loadDepot($dir){
-	$content = file_get_contents($dir);
-	return nl2br($content);
+	//$content=file_get_contents($dir);
+	//$content=iconv("gb2312", "utf-8//IGNORE",$content);
+	$fp=fopen($dir, "r");
+	$content=fread($fp,filesize($dir));
+	fclose($fp);
+	$content=substr($content,3);
+	return explode(',',$content);
 }
 
+
+function matchword($input,$matchword){
+	/*for($i=0;$i<strlen($matchword);$i++)
+	{
+		$partten="/^";
+		if($i<strlen($matchword)){
+			$partten.=$matchword[$i].'.*';
+		}else{
+			$partten.=$matchword[$i].'+[A-Za-z]+$/u';
+		}
+		//echo "current=".$matchword[$i]." pattern=".$partten."<br>";
+	}*/
+	//preg_match($partten,$input,$r);
+
+	if(strpos($input,$matchword)){
+		return 1;
+	}else{
+		return 0;
+	}
+	
+}
 //这么用
-$r=ruffle("fcuk");
+/*$r=ruffle("fcuk");
 foreach ($r as $key => $word) {
 	$t=matchOfEqualLength($word,"fcxk");//第一个参数是词库数据,每次填入一个词,数据多的时候加个循环就行
 	if($t){
@@ -83,6 +109,10 @@ foreach ($r as $key => $word) {
 	}else{
 		echo 'fcxk match '.$word.' valid<br>';
 	}
-}
+}*/
+
+$r=ruffle("fcuk");
+
+print_r($r);
 
 ?>
