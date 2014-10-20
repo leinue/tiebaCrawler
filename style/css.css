@@ -35,10 +35,20 @@ body{background: rgb(248,248,248);}
 .mgr-box table tr th,.mgr-box table tr td{
 	border: 1px solid rgb(221,221,221);
 	text-align: center;
+	padding: 5px;
 }
 
 .mgr-box table tr th{
 	border-bottom: 2px solid rgb(221,221,221);
+}
+
+.mgr-content td a{
+	text-decoration: none;
+	color: rgb(0,0,0);
+}
+
+.mgr-content td a:hover{
+	color: rgb(127, 140, 141);
 }
 
 .btn{
@@ -50,6 +60,7 @@ body{background: rgb(248,248,248);}
 	text-align: center;
 	height: 30px;
 	border-radius: 4px;
+	width: 60px;
 }
 
 .btn:hover{
@@ -72,9 +83,32 @@ body{background: rgb(248,248,248);}
 	width: 928px;
 	margin: 20px;
 	border: 1px solid rgb(221,221,221);
-	height: 20px;
+	height: 10px;
 	border-bottom: 2px solid rgb(221,221,221);
 	padding: 20px; 	
 	padding-left: 10px;
 	padding-bottom: 40px;
+}
+
+.whole-control:hover{
+	background: rgb(245,245,245);
+}
+
+.wrong-display{
+	border: 1px solid rgb(221,221,221);
+	border-bottom: 2px solid rgb(221,221,221);
+	width: 958px;
+	margin: 20px;
+}
+
+.wrong-header{
+	border-bottom: 1px solid rgb(221,221,221);
+	background: rgb(255,255,255);
+	padding: 6px;
+}
+
+.wrong-content{
+	height: 20px;
+	padding: 6px;
+	overflow: hidden;
 }
