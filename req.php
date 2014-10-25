@@ -4,27 +4,26 @@ include 'config.php';
 
 function deleteByPostID($id){
 	$mysqli = new mysqli($GLOBALS['serverurl'],$GLOBALS['databaseuser'],$GLOBALS['databasepassword'],$GLOBALS['database']);
-	$sqlVer="SELECT FROM `blacklist` WHERE `postID`=$id";
+	$sqlVer="SELECT FROM `unknown` WHERE `postID`='$id'";
 	$resV=$mysqli->query($sqlVer);
 	if($sqlVer){
-		$sql="DELETE FROM `blacklist` WHERE `postID`=$id";
+		$sql="DELETE FROM `unknown` WHERE `postID`='$id'";
 		$res=$mysqli->query($sql);
 		if($res){
 			return true;
 		}else{
 			printf("delete Error: %s\n", $mysqli->error);
 		}
-		$res->close();
 		$mysqli->close();
 	}
 }
 
 function addToWhiteByPostID($id){
 	$mysqli = new mysqli($GLOBALS['serverurl'],$GLOBALS['databaseuser'],$GLOBALS['databasepassword'],$GLOBALS['database']);
-	$sqlV="SELECT FROM `whitelist` WHERE `postID`=$id";
+	$sqlV="SELECT * FROM `whitelist` WHERE `postID`='$id'";
 	$resV=$mysqli->query($sqlV);
 	if($resV){
-		$sqlBlack="SELECT FROM `blacklist` WHERE `postID`=$id";
+		$sqlBlack="SELECT * FROM `unknown` WHERE `postID`='$id'";
 		$resV=$mysqli->query($sqlBlack);
 		while($obj = $resV->fetch_object()){
      	    $link=$obj->link;
@@ -33,9 +32,9 @@ function addToWhiteByPostID($id){
      	    $updatetime=$obj->updatetime;
      	    $isapproved=1;
     	}	
-		$sql="INSERT INTO ".$GLOBALS['tablename_white']. "(postid, link, message, dangerlevel, updatetime, isapproved) VALUES 
-		('{$id}', '{$link}', '{$message}','{$dangerlevel}','{$updatetime},'{$isapproved}')";
-		if($mysqli->query($sql)){
+		$sql="INSERT INTO ".$GLOBALS['tablename_white']. "(`postID`, `link`, `message`, `Dangerlevel`, `updateTime`, `isapproved`) VALUES 
+		('$id', '$link', '$message','$dangerlevel','$updatetime','$isapproved')";
+		if($mysqli->query($sql) && deleteByPostID($id)){
 			return '1';
 		}else{
 			printf("insert Error: %s\n", $mysqli->error);
@@ -87,9 +86,9 @@ function getReq(){
 
 function getData(){
 	$mysqli = new mysqli($GLOBALS['serverurl'],$GLOBALS['databaseuser'],$GLOBALS['databasepassword'],$GLOBALS['database']);
-	$sql="SELECT * FROM `blacklist`";
+	$sql="SELECT * FROM `unknown`";
 	$result=$mysqli->query($sql);
-	$row=$result->fetch_array(MYSQLI_ASSOC);
+	$row=$result->fetch_all(MYSQLI_ASSOC);
 	$result->free();
 	$mysqli->close();
 	return $row;
@@ -97,21 +96,35 @@ function getData(){
 
 function printTable(){
 	$row=getData();
-	foreach ($row as $key => $value) {
+	if (is_array($row)) {
+		foreach ($row as $key => $value) {
 		echo '  				<tr class="mgr-content">
     				<td><input type="checkbox"/></td>
-    				<td>'.$row['postid'].'</td>
-    				<td>'.$row['message'].'</td>
-    				<td>'.$row['updateTime'].'</td>
-    				<td><a href="'.$row['link'].'" target="_blank">'.$row['link'].'</a></td>
+    				<td>'.$value['postID'].'</td>
+    				<td>'.$value['message'].'</td>
+    				<td>'.$value['updateTime'].'</td>
+    				<td><a href="'.$value['link'].'" target="_blank">'.$value['link'].'</a></td>
     				<td>黑名单</td>
-    				<td>'.$row['dangerlevel'].'</td>
+    				<td>'.$value['Dangerlevel'].'</td>
     				<td>
-    					<a href="admin.php?start=open&method=del&postid='.$row['postid'].'"><button class="btn" name="del" value="del"">删除</button></a>	<br>
-						<a href="admin.php?start=open&method=add&postid='.$row['postid'].'"><button class="btn" name="addToWhite" value="addToWhite"">恢复</button></a>
+    					<a href="admin.php?start=open&method=del&postid='.$value['postID'].'"><button class="btn" name="del" value="del"">删除</button></a>	<br>
+						<a href="admin.php?start=open&method=add&postid='.$value['postID'].'"><button class="btn" name="addToWhite" value="addToWhite"">恢复</button></a>
 					</td>
   				</tr>';
+		}
+	}else{
+		echo '  				<tr class="mgr-content">
+    				<td>暂无数据</td>
+    				<td>暂无数据</td>
+    				<td>暂无数据</td>
+    				<td>暂无数据</td>
+    				<td>暂无数据</td>
+    				<td>暂无数据</td>
+    				<td>暂无数据</td>
+    				<td>暂无数据</td>
+  				</tr>';
 	}
+
 }
 
 ?>
